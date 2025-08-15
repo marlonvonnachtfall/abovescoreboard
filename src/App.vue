@@ -62,9 +62,9 @@
   </div>
 </template>
  <script>
-+import Bats from "./components/bats.vue";
+import Bats from "./components/bats.vue";
  export default {
-+  components: { Bats },
+  components: { Bats },
    data() {
     return {
       searchQuery: "",
