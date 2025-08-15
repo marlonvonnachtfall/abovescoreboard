@@ -1,5 +1,6 @@
 <template>
   <div class="guild-container">
+<Bats />
     <div class="guild-image"></div>
 
     <h1 class="guild-title">ABOVE's</h1>
@@ -60,10 +61,11 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
+ <script>
++import Bats from "./components/bats.vue";
+ export default {
++  components: { Bats },
+   data() {
     return {
       searchQuery: "",
       guildMembers: [],
