@@ -3,7 +3,7 @@
 <Bats />
     <div class="guild-image"></div>
 
-    <h1 class="guild-title">ABOVE's</h1>
+    <h1 class="guild-title">Above's</h1>
     <h2 class="guild-title">3rd Double EXP Marathon</h2>
     <div class="search-bar">
       <input
