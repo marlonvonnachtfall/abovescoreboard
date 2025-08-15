@@ -2,12 +2,12 @@
   <div class="guild-container">
     <div class="guild-image"></div>
 
-    <h1 class="guild-title">ABOVE</h1>
-    <h2 class="guild-title">Double Event Ranking</h2>
+    <h1 class="guild-title">ABOVE's</h1>
+    <h2 class="guild-title">3rd Double EXP Marathon</h2>
     <div class="search-bar">
       <input
         type="text"
-        placeholder="Search members..."
+        placeholder="Search for contestants..."
         v-model="searchQuery"
         @input="delaySearch"
       />
