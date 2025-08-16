@@ -1,16 +1,20 @@
 <script setup>
 import { ref } from "vue";
 
-/* Generate a handful of bats with random paths */
 const N = 12;
+const directions = ["right", "left", "down", "up", "diag1", "diag2"];
 const bats = ref(
-  Array.from({ length: N }, () => ({
-    top: 10 + Math.random() * 75,          // vh
-    scale: 0.6 + Math.random() * 0.8,      // size
-    duration: 12 + Math.random() * 10,     // seconds
-    delay: Math.random() * 8,              // seconds
-    flip: Math.random() < 0.5              // left/right
-  }))
+  Array.from({ length: N }, () => {
+    // Choose random direction
+    const dir = directions[Math.floor(Math.random() * directions.length)];
+    // Random starting position offset
+    const top = 10 + Math.random() * 75; // vh
+    const left = 10 + Math.random() * 80; // vw
+    const scale = 0.6 + Math.random() * 0.8;
+    const duration = 12 + Math.random() * 10;
+    const delay = Math.random() * 8;
+    return { dir, top, left, scale, duration, delay };
+  })
 );
 </script>
 
@@ -20,25 +24,21 @@ const bats = ref(
       v-for="(b, i) in bats"
       :key="i"
       class="bat"
+      :class="b.dir"
       :style="{
         '--top': b.top + 'vh',
+        '--left': b.left + 'vw',
         '--dur': b.duration + 's',
         '--delay': b.delay + 's',
+        '--scale': b.scale
       }"
     >
-      <svg
-        class="bat-shape"
-        :class="{ flip: b.flip }"
-        :style="{ '--scale': b.scale }"
-        viewBox="0 0 64 32"
-        aria-hidden="true"
-      >
-        <!-- simple bat silhouette -->
-        <path
-          d="M2,16 Q10,2 22,12 Q26,0 32,0 Q38,0 42,12 Q54,2 62,16 Q54,14 48,20 Q40,16 32,16 Q24,16 16,20 Q10,14 2,16 Z"
-          fill="currentColor"
-        />
-      </svg>
+      <img
+        src="/bat.gif"
+        alt="Bat"
+        class="bat-gif"
+        :style="{ transform: `scale(${b.scale})` }"
+      />
     </figure>
   </div>
 </template>
@@ -48,27 +48,81 @@ const bats = ref(
   position: fixed; inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 5; /* above background, below your UI */
+  z-index: 5;
 }
-
 .bat {
   position: absolute;
-  top: var(--top);
-  left: -12vw;
-  animation: fly var(--dur) linear var(--delay) infinite;
   opacity: 0.9;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
 }
-
-.bat-shape {
-  width: 64px; height: 32px; color: rgba(0,0,0,0.88);
-  transform: scale(var(--scale));
+.bat-gif {
+  width: 64px; height: 32px;
+  pointer-events: none;
 }
-.bat-shape.flip { transform: scale(var(--scale)) scaleX(-1); }
 
-@keyframes fly {
-  0%   { transform: translateX(0) translateY(0); }
-  50%  { transform: translateX(55vw) translateY(-6px); }
-  100% { transform: translateX(112vw) translateY(0); }
+/* Fly left to right */
+.bat.right {
+  top: var(--top);
+  left: -10vw;
+  animation: fly-right var(--dur) linear var(--delay) infinite;
+}
+@keyframes fly-right {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(110vw);}
+}
+
+/* Fly right to left */
+.bat.left {
+  top: var(--top);
+  left: 110vw;
+  animation: fly-left var(--dur) linear var(--delay) infinite;
+}
+@keyframes fly-left {
+  0%   { transform: translateX(0) scaleX(-1);}
+  100% { transform: translateX(-110vw) scaleX(-1);}
+}
+
+/* Fly top to bottom */
+.bat.down {
+  top: -10vh;
+  left: var(--left);
+  animation: fly-down var(--dur) linear var(--delay) infinite;
+}
+@keyframes fly-down {
+  0%   { transform: translateY(0) rotate(90deg);}
+  100% { transform: translateY(110vh) rotate(90deg);}
+}
+
+/* Fly bottom to top */
+.bat.up {
+  top: 110vh;
+  left: var(--left);
+  animation: fly-up var(--dur) linear var(--delay) infinite;
+}
+@keyframes fly-up {
+  0%   { transform: translateY(0) rotate(-90deg);}
+  100% { transform: translateY(-110vh) rotate(-90deg);}
+}
+
+/* Diagonal top-left to bottom-right */
+.bat.diag1 {
+  top: -10vh;
+  left: -10vw;
+  animation: fly-diag1 var(--dur) linear var(--delay) infinite;
+}
+@keyframes fly-diag1 {
+  0%   { transform: translate(0,0) rotate(25deg);}
+  100% { transform: translate(110vw,110vh) rotate(25deg);}
+}
+
+/* Diagonal bottom-right to top-left */
+.bat.diag2 {
+  top: 110vh;
+  left: 110vw;
+  animation: fly-diag2 var(--dur) linear var(--delay) infinite;
+}
+@keyframes fly-diag2 {
+  0%   { transform: translate(0,0) rotate(-25deg) scaleX(-1);}
+  100% { transform: translate(-110vw,-110vh) rotate(-25deg) scaleX(-1);}
 }
 </style>
