@@ -1,6 +1,8 @@
 <template>
   <div class="guild-container">
-<Bats />
+    <GhostLights />
+    <Bats />
+    <HeartExplode />
     <div class="guild-image"></div>
 
     <h1 class="guild-title">Above's</h1>
@@ -61,10 +63,13 @@
     </div>
   </div>
 </template>
- <script>
+
+<script>
 import Bats from "./components/bats.vue";
- export default {
-  components: { Bats },
+import GhostLights from "./components/ghostlights.vue";
+import HeartExplode from "./components/heart-explode.vue";
+export default {
+  components: { Bats, GhostLights, HeartExplode },
    data() {
     return {
       searchQuery: "",
