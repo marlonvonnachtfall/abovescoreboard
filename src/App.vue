@@ -158,12 +158,54 @@ export default {
         console.error("Error fetching initial levels:", error);
       }
     },
+/** Case/whitespace-insensitive name key */
+normalizeName(name) {
+  return String(name || "").trim().toLowerCase();
+},
 
+/** Dedupe by name, keeping the higher level if duplicates appear */
+dedupeByName(list) {
+  const map = new Map();
+  for (const p of list) {
+    const k = this.normalizeName(p.name);
+    if (!map.has(k) || (p.level ?? 0) > (map.get(k).level ?? 0)) {
+      map.set(k, p);
+    }
+  }
+  return Array.from(map.values());
+},
+/** NEW: fetch additional characters and merge into guildMembers */
+async fetchExtraCharacters() {
+  const urls = [
+    "https://api.tibiadata.com/v4/character/Black%20Cherry%20Berserker",
+    "https://api.tibiadata.com/v4/character/Axicoon",
+  ];
+
+  const extra = [];
+  for (const url of urls) {
+    try {
+      const r = await fetch(url, { headers: { Accept: "application/json" } });
+      if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+      const j = await r.json();
+      // Typical v4 shape: { character: { character: { name, level, ... } } }
+      const c = j?.character?.character ?? j?.character ?? j?.characters?.character;
+      if (c?.name && c.level != null) {
+        extra.push({ name: c.name, level: Number(c.level) || 0 });
+      }
+    } catch (e) {
+      console.warn("Character fetch failed:", url, e);
+    }
+  }
+
+  // Merge with guild members and dedupe
+  this.guildMembers = this.dedupeByName([...(this.guildMembers || []), ...extra]);
+},
     calculateScores() {
       if (this.guildMembers.length && this.initialLevels.length) {
         this.scores = this.guildMembers.map((member) => {
           const initialMember = this.initialLevels.find(
-            (init) => init.name === member.name
+  (init) =>
+    this.normalizeName(init.name) === this.normalizeName(member.name)
           );
           if (initialMember) {
             const levelDifference = member.level - initialMember.level;
@@ -219,11 +261,12 @@ export default {
       return points;
     },
 
-    async loadData() {
-      await this.fetchInitialLevels();
-      await this.fetchGuildData();
-      this.calculateScores();
-    },
+ async loadData() {
+  await this.fetchInitialLevels();
+  await this.fetchGuildData();        // existing guild fetch (Above)
+  await this.fetchExtraCharacters();  // NEW: add the two characters
+  this.calculateScores();
+},
   },
 
   created() {
