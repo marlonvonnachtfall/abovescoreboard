@@ -126,7 +126,9 @@ export default {
     async fetchGuildData() {
       try {
         const response = await fetch(
-          "https://api.tibiadata.com/v4/guild/above"
+          "https://api.tibiadata.com/v4/guild/above",
+          "https://api.tibiadata.com/v4/character/Black%20Cherry%20Berserker",
+          "https://api.tibiadata.com/v4/character/Axicoon"
         );
         if (!response.ok) {
           throw new Error("Failed to fetch guild data");
