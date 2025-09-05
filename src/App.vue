@@ -178,6 +178,8 @@ dedupeByName(list) {
 async fetchExtraCharacters() {
   const urls = [
     "https://api.tibiadata.com/v4/character/Black%20Cherry%20Berserker",
+    "https://api.tibiadata.com/v4/character/Jawzinho",
+    "https://api.tibiadata.com/v4/character/Elara%20von%20Nachtfall",
     "https://api.tibiadata.com/v4/character/Axicoon",
   ];
 
